@@ -198,9 +198,12 @@ async def start_command(client: Client, message: Message):
                     await asyncio.sleep(e.x)
                     snt_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                     snt_msgs.append(snt_msg)
-                except:
-                    continue
-            reply_markup = InlineKeyboardMarkup(
+                                except:
+                    pass
+            return
+    else:
+        try:
+             reply_markup = InlineKeyboardMarkup(
                 [
                     [InlineKeyboardButton("😊 About Me", callback_data="about"), InlineKeyboardButton("🔒 Close", callback_data="close")]
                     [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]
