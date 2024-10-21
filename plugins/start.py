@@ -1,4 +1,4 @@
-# Don't remove This Line From Here. Tg: @im_piro | @PiroHackz
+
 import asyncio
 import base64
 import logging
@@ -38,6 +38,8 @@ async def start_command(client: Client, message: Message):
 
     text = message.text
     verify_status = await get_verify_status(id)
+        if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
+            await update_verify_status(id, is_verified=False)
     is_premium = await is_premium_user(id)
 
     logging.info(f"Verify status: {verify_status}")
@@ -51,17 +53,15 @@ async def start_command(client: Client, message: Message):
     if base64_string:
         string = await decode(base64_string)
 
-        if "verify_" in text:
-            _, token = text.split("_", 1)
+        if "verify_" in message.text:
+            _, token = message.text.split("_", 1)
             if verify_status['verify_token'] != token:
-                return await message.reply("Your token is invalid or expired. Try again by clicking /start")
+                return await message.reply("⚠️ YOUR TOKEN IS INVALID or EXPIRED. TRY AGAIN BY CLICKING /start")
             await update_verify_status(id, is_verified=True, verified_time=time.time())
-            await message.reply(
-                "Your token successfully verified and valid for: 12 Hour", 
-                reply_markup=PREMIUM_BUTTON,
-                protect_content=False, 
-                quote=True
-            )
+            if verify_status["link"] == "":
+                reply_markup = None
+            await message.reply(f"CONGRATULATIONS 🎉, YOUR TOKEN SUCCESSFULLY VERIFIED AND VALID FOR: 24 HOUR ✅", reply_markup=reply_markup, protect_content=False, quote=True)
+
         elif string.startswith("premium"):
             if not is_premium:
                 # Notify user to get premium
@@ -132,10 +132,13 @@ async def start_command(client: Client, message: Message):
 
         elif string.startswith("get"):
             if not is_premium:
-                if not verify_status['is_verified']:
-                    token = ''.join(random.choices(piroayush.ascii_letters + piroayush.digits, k=10))
-                    await update_verify_status(id, verify_token=token, link="")
-                    link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
+                if not verify_status = await get_verify_status(id)
+            if IS_VERIFY and not verify_status['is_verified']:
+                short_url = f"gplinks.com"
+                # TUT_VID = f"https://t.me/How_to_Download_7x/35"
+                token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                await update_verify_status(id, verify_token=token, link="")
+                link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
                     btn = [
                         [InlineKeyboardButton("Click here", url=link), InlineKeyboardButton('How to use the bot', url=TUT_VID)],  # First row with two buttons
                         [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]  # Second row with one button
